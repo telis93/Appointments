@@ -1,0 +1,21 @@
+body {
+    background-color: #ff851b;
+}
+#app{ 
+    width:400px;
+    margin: auto;
+    border: solid;
+    background-color: saddlebrown;
+    border-color: dimgrey;
+    border-radius: 25px;
+}
+#app h1{
+    text-align: center;
+    background-color: #7fa7ff;
+    border-radius: 25px;
+    color: #ffffff;
+}
+#app ul {
+    color: #d4e6ff
+}
+
