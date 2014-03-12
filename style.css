@@ -23,5 +23,12 @@ body {
     border: solid;
     border-color: orange;
     background-color: white;
+    overflow: hidden;
+}
+#app button {
+    float: right;
+}
+.cancelled {
+    text-decoration: line-through;
 }
 

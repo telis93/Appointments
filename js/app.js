@@ -5,11 +5,14 @@ Backbone.couch_connector.config.global_changes = false;
 var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
     defaults: function () {
         return {title: 'Checkup', date: new Date()}
+    },
+    cancel: function() {
+        this.set('cancelled', true);
     }
 });
 var appointment = new Appointment({id: '1'});
 appointment.fetch().complete(function () {
-    appointment.set('cancelled', true);
+//    appointment.set('cancelled', true);
     appointment.on('change:cancelled', function () {
         alert('The appointmentment ' + this.attributes.title + ' was cancelled!');
     });
@@ -21,12 +24,23 @@ var AppointmentView = Backbone.View.extend({
     tagName: 'ul',
     id: "appointments",
     events: {
-        'dblclick li': 'alert'
+        'dblclick li': 'alert',
+        'click button': 'cancel'
     },
-    alert: function(e) {
+    cancel: function() {
+        this.model.cancel();
+        this.render();
+    },
+    alert: function() {
         alert(this.model.get('description'));
     },
-    template: _.template('<li><%= title %></li>'),
+    template: _.template('<li' +
+        '<% if(cancelled) print(\' class="cancelled"\') %> >' +
+        '<%= title %>' +
+        '<button type="button" ' +
+        '<% if(cancelled) print(" disabled") %>' +
+        '>Cancel</button>' +
+        '</li>'),
     render: function () {
         var attributes = this.model.toJSON();
         $(this.el).html(this.template(attributes));
