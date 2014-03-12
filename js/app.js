@@ -18,8 +18,10 @@ appointment.fetch().complete(function () {
 /* appointment.set('title', 'My knee hurts');
  appointment.save();*/
 var AppointmentView = Backbone.View.extend({
+    template: _.template('<li><%= title %></li>'),
     render: function () {
-        $(this.el).html('<li>' + this.model.get('title') + '</li>');
+        var attributes = this.model.toJSON();
+        $(this.el).html(this.template(attributes));
     }
 });
 var AppView = Backbone.View.extend({
