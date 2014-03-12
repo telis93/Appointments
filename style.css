@@ -16,6 +16,12 @@ body {
     color: #ffffff;
 }
 #app ul {
-    color: #d4e6ff
+    list-style-type: none;
+    color: rgba(0, 0, 0, 0.64)
+}
+#app li {
+    border: solid;
+    border-color: orange;
+    background-color: white;
 }
 
