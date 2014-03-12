@@ -18,6 +18,8 @@ appointment.fetch().complete(function () {
 /* appointment.set('title', 'My knee hurts');
  appointment.save();*/
 var AppointmentView = Backbone.View.extend({
+    tagName: 'ul',
+    id: "appointments",
     template: _.template('<li><%= title %></li>'),
     render: function () {
         var attributes = this.model.toJSON();
@@ -28,10 +30,10 @@ var AppView = Backbone.View.extend({
     render: function () {
         var app = $('<div></div>', {id: "app"}).appendTo(this.el);
         $('<h1></h1>', {text: "Appointments"}).appendTo(app);
-        $('<ul></ul>', {id: "appointments"}).appendTo(app);
-        var appointmentView = new AppointmentView({model: appointment, el: $('#appointments')});
+        var appointmentView = new AppointmentView({model: appointment});
         appointmentView.model.fetch().complete(function () {
             appointmentView.render();
+            app.append(appointmentView.el);
         });
 
     }
