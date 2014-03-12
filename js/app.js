@@ -27,8 +27,9 @@ var AppointmentView = Backbone.View.extend({
     }
 });
 var AppView = Backbone.View.extend({
+    id: "app",
     render: function () {
-        var app = $('<div></div>', {id: "app"}).appendTo(this.el);
+        var app = $(this.el);
         $('<h1></h1>', {text: "Appointments"}).appendTo(app);
         var appointmentView = new AppointmentView({model: appointment});
         appointmentView.model.fetch().complete(function () {
@@ -38,5 +39,6 @@ var AppView = Backbone.View.extend({
 
     }
 });
-var app = new AppView({el: $('body')});
+var app = new AppView();
 app.render();
+$('body').append(app.el);
