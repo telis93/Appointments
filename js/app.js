@@ -18,18 +18,27 @@ appointment.fetch().complete(function () {
     });
     appointment.save();
 });
-/*appointment.set('description', 'My knee hurts');
- appointment.save();*/
+/*
+appointment.set('title', 'Checkup');
+appointment.set('description', 'My knee hurts');
+appointment.save();
+*/
 var AppointmentView = Backbone.View.extend({
     tagName: 'ul',
     id: "appointments",
+    initialize: function() {
+        this.model.on('destroy', this.remove, this );
+        this.model.on('change:cancelled', this.render, this);
+    },
+    remove: function() {
+        this.$el.remove();
+    },
     events: {
         'dblclick li': 'alert',
         'click button': 'cancel'
     },
     cancel: function() {
         this.model.cancel();
-        this.render();
     },
     alert: function() {
         alert(this.model.get('description'));
