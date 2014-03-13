@@ -30,6 +30,8 @@ descriptions = appointmentList.map(function(a) {
     return a.get('description');
 });
 var AppointmentsView = Backbone.View.extend({
+    id: "appointments",
+    tagName: 'ul',
     initialize: function() {
         this.collection.on('reset', this.render, this);
         this.collection.on('remove', this.hideModel);
@@ -46,16 +48,26 @@ var AppointmentsView = Backbone.View.extend({
     }
 });
 var AppointmentView = Backbone.View.extend({
-    tagName: 'ul',
-    id: "appointments",
+    tagName: 'li',
+    className: function() {
+        return (this.model.get('cancelled'))? "cancelled":"";
+    },
     initialize: function() {
         this.model.on('destroy', this.remove, this );
         this.model.on('change:cancelled', this.render, this);
         this.model.on('change:cancelled', function () {
-            if(this.model.get('cancelled'))
+            if(this.model.get('cancelled')) {
                 alert('The appointmentment ' + this.model.get('title') + ' was cancelled!');
+                this.$el.addClass('cancelled');
+            }
+            else {
+                this.$el.removeClass('cancelled');
+            }
         }, this);
         this.model.on('hide', this.remove, this);
+    },
+    evalClass: function() {
+        return (this.model.get('cancelled'))? "cancelled":"";
     },
     destroy: function() {
         this.model.destroy();
@@ -74,14 +86,12 @@ var AppointmentView = Backbone.View.extend({
     alert: function() {
         alert(this.model.get('description'));
     },
-    template: _.template('<li' +
-        '<% if(cancelled) print(\' class="cancelled"\') %> >' +
+    template: _.template(
         '<button type="button" class="destroy"></button>' +
         '<%= title %>' +
         '<button type="button" class="cancel"' +
         '<% if(cancelled) print(" disabled") %>' +
-        '>Cancel</button>' +
-        '</li>'),
+        '>Cancel</button>'),
     render: function () {
         var attributes = this.model.toJSON();
         $(this.el).html(this.template(attributes));
