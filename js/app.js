@@ -10,6 +10,10 @@ var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
         this.set('cancelled', true);
     }
 });
+var AppointmentList = Backbone.Collection.extend({
+    url: '/appointments',
+    model: Appointment
+});
 var appointment = new Appointment({id: '1'});
 appointment.fetch().complete(function () {
 //    appointment.set('cancelled', true);
@@ -24,6 +28,14 @@ appointment.set('title', 'Checkup');
 appointment.set('description', 'My knee hurts');
 appointment.save();
 */
+appointmentList = new AppointmentList();
+appointmentList.add(appointment);
+appointmentList.on('add', function(a) {
+    alert('New Appointment!!!\n' + a.get('title'));
+});
+descriptions = appointmentList.map(function(a) {
+    return a.get('description');
+});
 var AppointmentView = Backbone.View.extend({
     tagName: 'ul',
     id: "appointments",
