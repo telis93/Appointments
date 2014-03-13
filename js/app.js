@@ -16,7 +16,7 @@ appointment.fetch().complete(function () {
     appointment.on('change:cancelled', function () {
         alert('The appointmentment ' + this.attributes.title + ' was cancelled!');
     });
-    appointment.save();
+//    appointment.save();
 });
 /*
 appointment.set('title', 'Checkup');
@@ -30,12 +30,16 @@ var AppointmentView = Backbone.View.extend({
         this.model.on('destroy', this.remove, this );
         this.model.on('change:cancelled', this.render, this);
     },
+    destroy: function() {
+        this.model.destroy();
+    },
     remove: function() {
         this.$el.remove();
     },
     events: {
         'dblclick li': 'alert',
-        'click button': 'cancel'
+        'click #cancel': 'cancel',
+        'click #destroy': 'destroy'
     },
     cancel: function() {
         this.model.cancel();
@@ -45,8 +49,9 @@ var AppointmentView = Backbone.View.extend({
     },
     template: _.template('<li' +
         '<% if(cancelled) print(\' class="cancelled"\') %> >' +
+        '<button type="button" id="destroy"></button>' +
         '<%= title %>' +
-        '<button type="button" ' +
+        '<button type="button" id="cancel"' +
         '<% if(cancelled) print(" disabled") %>' +
         '>Cancel</button>' +
         '</li>'),

@@ -25,10 +25,22 @@ body {
     background-color: white;
     overflow: hidden;
 }
-#app button {
+#cancel{
     float: right;
 }
 .cancelled {
     text-decoration: line-through;
+}
+#destroy {
+    background-image: url("image/delete-mini.png");
+    width: 15px;
+    height: 15px;
+    background-color: transparent;
+    border: medium none;
+    float: left;
+}
+#destroy:hover {
+    background-position: -15px;
+    cursor: pointer;
 }
 
