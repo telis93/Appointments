@@ -273,7 +273,10 @@ backbone-couchdb.js is licensed under the MIT license.
     if ((_ref2 = opts.complete) == null) {
       opts.complete = function() {};
     }
-    if(model.attributes.id)
+     //todo: remove that
+    if(model.models)
+         console.log('hi');
+    else if(model.attributes.id)
           model.id = model.attributes.id;
     switch (method) {
       case "read":
