@@ -14,7 +14,8 @@ var appointment = new Appointment({id: '1'});
 appointment.fetch().complete(function () {
 //    appointment.set('cancelled', true);
     appointment.on('change:cancelled', function () {
-        alert('The appointmentment ' + this.attributes.title + ' was cancelled!');
+        if(appointment.get('cancelled'))
+            alert('The appointmentment ' + this.attributes.title + ' was cancelled!');
     });
 //    appointment.save();
 });
