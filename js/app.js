@@ -15,14 +15,10 @@ var AppointmentList = Backbone.Collection.extend({
     model: Appointment
 });
 var appointment = new Appointment({id: '1'});
-appointment.fetch().complete(function () {
+appointment.fetch()//.complete(function () {
 //    appointment.set('cancelled', true);
-    appointment.on('change:cancelled', function () {
-        if(appointment.get('cancelled'))
-            alert('The appointmentment ' + this.attributes.title + ' was cancelled!');
-    });
-//    appointment.save();
-});
+//    appointment.save();})
+;
 /*
 appointment.set('title', 'Checkup');
 appointment.set('description', 'My knee hurts');
@@ -30,11 +26,17 @@ appointment.save();
 */
 appointmentList = new AppointmentList();
 appointmentList.add(appointment);
-appointmentList.on('add', function(a) {
-    alert('New Appointment!!!\n' + a.get('title'));
-});
 descriptions = appointmentList.map(function(a) {
     return a.get('description');
+});
+var AppointmentsView = Backbone.View.extend({
+    render: function() {
+        this.collection.forEach(this.addOne, this);
+    },
+    addOne: function(a) {
+        var aV = new AppointmentView({model: a});
+        this.$el.append(aV.render().el);
+    }
 });
 var AppointmentView = Backbone.View.extend({
     tagName: 'ul',
@@ -42,6 +44,10 @@ var AppointmentView = Backbone.View.extend({
     initialize: function() {
         this.model.on('destroy', this.remove, this );
         this.model.on('change:cancelled', this.render, this);
+        this.model.on('change:cancelled', function () {
+            if(this.model.get('cancelled'))
+                alert('The appointmentment ' + this.model.get('title') + ' was cancelled!');
+        }, this);
     },
     destroy: function() {
         this.model.destroy();
@@ -51,8 +57,8 @@ var AppointmentView = Backbone.View.extend({
     },
     events: {
         'dblclick li': 'alert',
-        'click #cancel': 'cancel',
-        'click #destroy': 'destroy'
+        'click .cancel': 'cancel',
+        'click .destroy': 'destroy'
     },
     cancel: function() {
         this.model.cancel();
@@ -62,15 +68,16 @@ var AppointmentView = Backbone.View.extend({
     },
     template: _.template('<li' +
         '<% if(cancelled) print(\' class="cancelled"\') %> >' +
-        '<button type="button" id="destroy"></button>' +
+        '<button type="button" class="destroy"></button>' +
         '<%= title %>' +
-        '<button type="button" id="cancel"' +
+        '<button type="button" class="cancel"' +
         '<% if(cancelled) print(" disabled") %>' +
         '>Cancel</button>' +
         '</li>'),
     render: function () {
         var attributes = this.model.toJSON();
         $(this.el).html(this.template(attributes));
+        return this;
     }
 });
 var AppView = Backbone.View.extend({
@@ -78,10 +85,13 @@ var AppView = Backbone.View.extend({
     render: function () {
         var app = $(this.el);
         $('<h1></h1>', {text: "Appointments"}).appendTo(app);
-        var appointmentView = new AppointmentView({model: appointment});
-        appointmentView.model.fetch().complete(function () {
-            appointmentView.render();
-            app.append(appointmentView.el);
+        var appointmentsView = new AppointmentsView({collection: appointmentList});
+        appointmentsView.collection.fetch().complete(function () {
+            appointmentsView.render();
+            app.append(appointmentsView.el);
+            appointmentList.on('add', function(a) {
+                alert('New Appointment!!!\n' + a.get('title'));
+            });
         });
 
     }

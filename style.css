@@ -25,13 +25,13 @@ body {
     background-color: white;
     overflow: hidden;
 }
-#cancel{
+.cancel{
     float: right;
 }
 .cancelled {
     text-decoration: line-through;
 }
-#destroy {
+.destroy {
     background-image: url("image/delete-mini.png");
     width: 15px;
     height: 15px;
@@ -39,7 +39,7 @@ body {
     border: medium none;
     float: left;
 }
-#destroy:hover {
+.destroy:hover {
     background-position: -15px;
     cursor: pointer;
 }
