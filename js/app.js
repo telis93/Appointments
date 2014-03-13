@@ -14,22 +14,29 @@ var AppointmentList = Backbone.Collection.extend({
     url: '/appointments',
     model: Appointment
 });
-var appointment = new Appointment({id: '1'});
-appointment.fetch()//.complete(function () {
+//var appointment = new Appointment({id: '1'});
+//appointment.fetch()//.complete(function () {
 //    appointment.set('cancelled', true);
 //    appointment.save();})
-;
+//;
 /*
 appointment.set('title', 'Checkup');
 appointment.set('description', 'My knee hurts');
 appointment.save();
 */
 appointmentList = new AppointmentList();
-appointmentList.add(appointment);
+//appointmentList.add(appointment);
 descriptions = appointmentList.map(function(a) {
     return a.get('description');
 });
 var AppointmentsView = Backbone.View.extend({
+    initialize: function() {
+        this.collection.on('reset', this.render, this);
+        this.collection.on('remove', this.hideModel);
+    },
+    hideModel: function(a) {
+        a.trigger('hide');
+    },
     render: function() {
         this.collection.forEach(this.addOne, this);
     },
@@ -48,6 +55,7 @@ var AppointmentView = Backbone.View.extend({
             if(this.model.get('cancelled'))
                 alert('The appointmentment ' + this.model.get('title') + ' was cancelled!');
         }, this);
+        this.model.on('hide', this.remove, this);
     },
     destroy: function() {
         this.model.destroy();
@@ -92,6 +100,7 @@ var AppView = Backbone.View.extend({
             appointmentList.on('add', function(a) {
                 alert('New Appointment!!!\n' + a.get('title'));
             });
+            appointmentList.on('add', appointmentsView.addOne, appointmentsView);
         });
 
     }
