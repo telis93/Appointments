@@ -4,7 +4,10 @@ Backbone.couch_connector.config.global_changes = false;
 
 var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
     defaults: function () {
-        return {title: 'Checkup', date: new Date()}
+        return {title: 'Checkup',
+            date: new Date(),
+            cancelled: false,
+            description: 'No description'};
     },
     cancel: function() {
         this.set('cancelled', true);
@@ -76,7 +79,7 @@ var AppointmentView = Backbone.View.extend({
         this.$el.remove();
     },
     events: {
-        'dblclick li': 'alert',
+        'dblclick': 'alert',
         'click .cancel': 'cancel',
         'click .destroy': 'destroy'
     },
@@ -100,9 +103,20 @@ var AppointmentView = Backbone.View.extend({
 });
 var AppView = Backbone.View.extend({
     id: "app",
+    events: {
+        "keypress #add": function(e) {
+            title = $('#add').attr('value');
+            if(e.which == 13 && title) {
+                appointmentList.add({title: $('#add').attr('value')});
+                $('#add').attr('value', '');
+            }
+
+        }
+    },
     render: function () {
         var app = $(this.el);
         $('<h1></h1>', {text: "Appointments"}).appendTo(app);
+        $('<input></input>', {type:"text", id:"add"}).appendTo(app);
         var appointmentsView = new AppointmentsView({collection: appointmentList});
         appointmentsView.collection.fetch().complete(function () {
             appointmentsView.render();
@@ -118,3 +132,4 @@ var AppView = Backbone.View.extend({
 var app = new AppView();
 app.render();
 $('body').append(app.el);
+$('#add').focus();

@@ -17,7 +17,8 @@ body {
 }
 #app ul {
     list-style-type: none;
-    color: rgba(0, 0, 0, 0.64)
+    color: rgba(0, 0, 0, 0.64);
+    padding-right: 40px;
 }
 #app li {
     border: solid;
@@ -42,5 +43,12 @@ body {
 .destroy:hover {
     background-position: -15px;
     cursor: pointer;
+}
+#add {
+    width: 79%;
+    height: 50px;
+    font-size: 2em;
+    color: rgba(0, 0, 0, 0.69);
+    margin-left: 40px;
 }
 
