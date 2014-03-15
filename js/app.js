@@ -38,11 +38,19 @@ var AppointmentsView = Backbone.View.extend({
     initialize: function() {
         this.collection.on('reset', this.render, this);
         this.collection.on('remove', this.hideModel);
+        this.collection.on('add', function(a) {
+            alert('New Appointment!!!\n' + a.get('title'));
+        });
+        this.collection.on('add', this.addOne, this);
+        this.collection.on('add', function(a) {
+            a.save();
+        });
     },
     hideModel: function(a) {
         a.trigger('hide');
     },
     render: function() {
+        this.$el.empty();
         this.collection.forEach(this.addOne, this);
     },
     addOne: function(a) {
@@ -57,6 +65,9 @@ var AppointmentView = Backbone.View.extend({
     },
     initialize: function() {
         this.model.on('destroy', this.remove, this );
+        this.model.on('change', function() {
+            this.save();
+        },this.model);
         this.model.on('change:cancelled', this.render, this);
         this.model.on('change:cancelled', function () {
             if(this.model.get('cancelled')) {
@@ -68,9 +79,6 @@ var AppointmentView = Backbone.View.extend({
             }
         }, this);
         this.model.on('hide', this.remove, this);
-    },
-    evalClass: function() {
-        return (this.model.get('cancelled'))? "cancelled":"";
     },
     destroy: function() {
         this.model.destroy();
@@ -105,26 +113,23 @@ var AppView = Backbone.View.extend({
     id: "app",
     events: {
         "keypress #add": function(e) {
-            title = $('#add').attr('value');
+            var textField = $('#add');
+            title = textField.attr('value');
             if(e.which == 13 && title) {
-                appointmentList.add({title: $('#add').attr('value')});
-                $('#add').attr('value', '');
+                appointmentList.add({title: textField.attr('value')});
+                textField.attr('value', '');
             }
 
         }
     },
     render: function () {
         var app = $(this.el);
-        $('<h1></h1>', {text: "Appointments"}).appendTo(app);
-        $('<input></input>', {type:"text", id:"add"}).appendTo(app);
+        $('<h1>', {text: "Appointments"}).appendTo(app);
+        $('<input>', {type:"text", id:"add"}).appendTo(app);
         var appointmentsView = new AppointmentsView({collection: appointmentList});
-        appointmentsView.collection.fetch().complete(function () {
+        appointmentsView.collection.fetch({silent: true}).complete(function () {
             appointmentsView.render();
             app.append(appointmentsView.el);
-            appointmentList.on('add', function(a) {
-                alert('New Appointment!!!\n' + a.get('title'));
-            });
-            appointmentList.on('add', appointmentsView.addOne, appointmentsView);
         });
 
     }
