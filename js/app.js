@@ -1,6 +1,6 @@
 Backbone.couch_connector.config.db_name = "appointments";
 Backbone.couch_connector.config.ddoc_name = "appointments";
-Backbone.couch_connector.config.global_changes = false;
+Backbone.couch_connector.config.global_changes = true;
 
 var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
     defaults: function () {
@@ -42,9 +42,6 @@ var AppointmentsView = Backbone.View.extend({
             alert('New Appointment!!!\n' + a.get('title'));
         });
         this.collection.on('add', this.addOne, this);
-        this.collection.on('add', function(a) {
-            a.save();
-        });
     },
     hideModel: function(a) {
         a.trigger('hide');
@@ -65,9 +62,6 @@ var AppointmentView = Backbone.View.extend({
     },
     initialize: function() {
         this.model.on('destroy', this.remove, this );
-        this.model.on('change', function() {
-            this.save();
-        },this.model);
         this.model.on('change:cancelled', this.render, this);
         this.model.on('change:cancelled', function () {
             if(this.model.get('cancelled')) {
@@ -93,6 +87,7 @@ var AppointmentView = Backbone.View.extend({
     },
     cancel: function() {
         this.model.cancel();
+        this.model.save();
     },
     alert: function() {
         alert(this.model.get('description'));
@@ -116,7 +111,9 @@ var AppView = Backbone.View.extend({
             var textField = $('#add');
             title = textField.attr('value');
             if(e.which == 13 && title) {
-                appointmentList.add({title: textField.attr('value')});
+                var a = new Appointment({title: textField.attr('value')});
+                appointmentList.add(a);
+                a.save();
                 textField.attr('value', '');
             }
 
