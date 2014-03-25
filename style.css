@@ -51,4 +51,24 @@ body {
     color: rgba(0, 0, 0, 0.69);
     margin-left: 40px;
 }
+#overlay {
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    opacity: 0.6;
+    z-index: 1001;
+    background: none repeat scroll 0 0 rgb(187, 187, 187);
+}
+#login-container {
+    z-index: 1002;
+    position: fixed;
+    width: 245px;
+    background-color: darkgray;
+}
+#login-header {
+    color: #ffffff;
+    background-color: gray;
+}
 

@@ -133,5 +133,26 @@ var AppView = Backbone.View.extend({
 });
 var app = new AppView();
 app.render();
-$('body').append(app.el);
+var $body = $('body');
+$body.append(app.el);
 $('#add').focus();
+var overlay = $('<div>', {id: 'overlay'}),
+    loginDiv = $('<div>', {id: 'login-container'}).appendTo($body),
+    loginHeader = $('<div>', {id: 'login-header', text: 'Login'}).appendTo(loginDiv),
+    login = $('<div>', {id: 'login'}).appendTo(loginDiv).
+    on('click','a', function() {
+            overlay.appendTo($body);
+            loginDiv.css('left', parseFloat($body.css('width'),10)/2 - parseFloat(loginDiv.css('width'),10)/2);
+            loginDiv.css('top', parseFloat($body.css('height'),10)/2 - parseFloat(loginDiv.css('height'),10)/2);
+
+    });
+    login.couchLogin({
+        loggedIn: function() {
+            overlay.remove();
+            loginDiv.css('left','').css('top','');
+        },
+        loggedOut: function() {
+            overlay.remove();
+            loginDiv.css('left','').css('top','');
+        }
+    });
