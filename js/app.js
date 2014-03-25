@@ -138,13 +138,13 @@ var AppView = Backbone.View.extend({
 });
 var AppointmentRouter = Backbone.Router.extend({
     routes: {
-        'index.html': 'index',
+        '': 'index',
         'appointments/:id': 'show'
     },
     start: function() {
         Backbone.history.start({
             pushState: true,
-            root: '/appointments/_design/appointments/'
+            root: '/appointments/_design/appointments/index.html/'
         });
     },
     index: function() {
