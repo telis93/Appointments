@@ -16,9 +16,6 @@ var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
 var AppointmentList = Backbone.Collection.extend({
     url: '/appointments',
     model: Appointment,
-    focusOnAppointmentItem: function(id) {
-        this.reset(this.get(id));
-    }
 });
 //var appointment = new Appointment({id: '1'});
 //appointment.fetch()//.complete(function () {
@@ -110,6 +107,9 @@ var AppointmentView = Backbone.View.extend({
 });
 var AppView = Backbone.View.extend({
     id: "app",
+    initialize: function() {
+        this.appointmentsView = new AppointmentsView({collection: appointmentList});
+    },
     events: {
         "keypress #add": function(e) {
             var textField = $('#add');
@@ -123,17 +123,28 @@ var AppView = Backbone.View.extend({
 
         }
     },
+    afterFetch: function () {
+        this.appointmentsView.render();
+        $(this.el).append(this.appointmentsView.el);
+    },
     render: function () {
         var app = $(this.el);
         app.empty();
         $('<h1>', {text: "Appointments"}).appendTo(app);
         $('<input>', {type:"text", id:"add"}).appendTo(app);
-        var appointmentsView = new AppointmentsView({collection: appointmentList});
-        appointmentsView.collection.fetch({silent: true}).complete(function () {
-            appointmentsView.render();
-            app.append(appointmentsView.el);
+        var $this = this;
+        this.appointmentsView.collection.fetch({silent: true}).complete(function () {
+            $this.afterFetch.apply($this);
         });
-
+    },
+    focusOnAppointmentItem: function(id) {
+        $(this.el).empty();
+        var a = new Appointment({id: id}),
+            $this = this;
+        a.fetch().complete(function() {
+            appointmentList.reset(a, {silent: true});
+            $this.afterFetch();
+        });
     }
 });
 var AppointmentRouter = Backbone.Router.extend({
@@ -143,24 +154,21 @@ var AppointmentRouter = Backbone.Router.extend({
     },
     start: function() {
         Backbone.history.start({
-            pushState: true,
             root: '/appointments/_design/appointments/index.html/'
         });
+        $('body').html(this.app.el);
     },
     index: function() {
         this.app.render();
-        $('body').html(this.app.el);
         $('#add').focus();
     },
     show: function(id) {
-        this.appointmentsList.focusOnAppointmentItem(id);
+        this.app.focusOnAppointmentItem(id);
     },
     initialize: function(options) {
         this.app = new AppView();
-        if(options.appointmentsList)
-            this.appointmentsList = options.appointmentsList;
 
     }
 });
-var router = new AppointmentRouter({appointmentsList: appointmentList});
+var router = new AppointmentRouter();
 $(function() {router.start({trigger: true})});
