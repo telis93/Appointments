@@ -26,6 +26,9 @@ body {
     background-color: white;
     overflow: hidden;
 }
+#app li span {
+    cursor: pointer;
+}
 .cancel{
     float: right;
 }

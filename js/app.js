@@ -15,7 +15,10 @@ var Appointment = Backbone.Model.extend({urlRoot: '/appointments',
 });
 var AppointmentList = Backbone.Collection.extend({
     url: '/appointments',
-    model: Appointment
+    model: Appointment,
+    focusOnAppointmentItem: function(id) {
+        this.reset(this.get(id));
+    }
 });
 //var appointment = new Appointment({id: '1'});
 //appointment.fetch()//.complete(function () {
@@ -29,9 +32,6 @@ appointment.save();
 */
 appointmentList = new AppointmentList();
 //appointmentList.add(appointment);
-descriptions = appointmentList.map(function(a) {
-    return a.get('description');
-});
 var AppointmentsView = Backbone.View.extend({
     id: "appointments",
     tagName: 'ul',
@@ -83,7 +83,11 @@ var AppointmentView = Backbone.View.extend({
     events: {
         'dblclick': 'alert',
         'click .cancel': 'cancel',
-        'click .destroy': 'destroy'
+        'click .destroy': 'destroy',
+        'click span': 'navigate'
+    },
+    navigate: function() {
+        router.navigate('appointments/'+this.model.get('id'), {trigger: true});
     },
     cancel: function() {
         this.model.cancel();
@@ -94,7 +98,7 @@ var AppointmentView = Backbone.View.extend({
     },
     template: _.template(
         '<button type="button" class="destroy"></button>' +
-        '<%= title %>' +
+        '<span><%= title %></span>' +
         '<button type="button" class="cancel"' +
         '<% if(cancelled) print(" disabled") %>' +
         '>Cancel</button>'),
@@ -109,7 +113,7 @@ var AppView = Backbone.View.extend({
     events: {
         "keypress #add": function(e) {
             var textField = $('#add');
-            title = textField.attr('value');
+            var title = textField.attr('value');
             if(e.which == 13 && title) {
                 var a = new Appointment({title: textField.attr('value')});
                 appointmentList.add(a);
@@ -121,6 +125,7 @@ var AppView = Backbone.View.extend({
     },
     render: function () {
         var app = $(this.el);
+        app.empty();
         $('<h1>', {text: "Appointments"}).appendTo(app);
         $('<input>', {type:"text", id:"add"}).appendTo(app);
         var appointmentsView = new AppointmentsView({collection: appointmentList});
@@ -131,7 +136,31 @@ var AppView = Backbone.View.extend({
 
     }
 });
-var app = new AppView();
-app.render();
-$('body').append(app.el);
-$('#add').focus();
+var AppointmentRouter = Backbone.Router.extend({
+    routes: {
+        'index.html': 'index',
+        'appointments/:id': 'show'
+    },
+    start: function() {
+        Backbone.history.start({
+            pushState: true,
+            root: '/appointments/_design/appointments/'
+        });
+    },
+    index: function() {
+        this.app.render();
+        $('body').html(this.app.el);
+        $('#add').focus();
+    },
+    show: function(id) {
+        this.appointmentsList.focusOnAppointmentItem(id);
+    },
+    initialize: function(options) {
+        this.app = new AppView();
+        if(options.appointmentsList)
+            this.appointmentsList = options.appointmentsList;
+
+    }
+});
+var router = new AppointmentRouter({appointmentsList: appointmentList});
+$(function() {router.start({trigger: true})});
